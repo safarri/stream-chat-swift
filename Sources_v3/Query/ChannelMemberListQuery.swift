@@ -33,24 +33,26 @@ public struct ChannelMemberListQuery<ExtraData: UserExtraData>: Encodable {
     /// A sorting for the query (see `Sorting`).
     public let sort: [Sorting<ChannelMemberListSortingKey>]
     /// A pagination.
-    public var pagination: Pagination
+    public var pagination: Pagination?
     
     /// Creates new `ChannelMemberListQuery` instance.
     /// - Parameters:
     ///   - cid: The channel identifier.
     ///   - filter: The members filter. Empty filter will return all users.
     ///   - sort: The sorting for members list.
-    ///   - pagination: The pagination.
+    ///   - pageSize: The page size for pagination.
+    ///   - paginationOptions: advanced options for pagination. (See `PaginationOption`)
     public init(
         cid: ChannelId,
         filter: Filter<MemberListFilterScope<ExtraData>>? = nil,
         sort: [Sorting<ChannelMemberListSortingKey>] = [],
-        pagination: Pagination = [.channelMembersPageSize]
+        pageSize: Int = .channelMembersPageSize,
+        paginationOptions: Set<PaginationOption> = []
     ) {
         self.cid = cid
         self.filter = filter
         self.sort = sort
-        self.pagination = pagination
+        pagination = Pagination(pageSize: pageSize, options: paginationOptions)
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -65,7 +67,7 @@ public struct ChannelMemberListQuery<ExtraData: UserExtraData>: Encodable {
         try container.encode(cid.id, forKey: .channelId)
         try container.encode(cid.type, forKey: .channelType)
         
-        try pagination.encode(to: encoder)
+        try pagination.map { try $0.encode(to: encoder) }
         if !sort.isEmpty { try container.encode(sort, forKey: .sort) }
     }
 }

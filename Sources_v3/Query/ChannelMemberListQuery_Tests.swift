@@ -45,7 +45,7 @@ final class ChannelMemberListQuery_Tests: XCTestCase {
             cid: .unique,
             filter: .equal(.id, to: "luke"),
             sort: [.init(key: .createdAt, isAscending: true)],
-            pagination: [.offset(3)]
+            paginationOptions: [.offset(3)]
         )
 
         // Encode the query.
@@ -57,6 +57,7 @@ final class ChannelMemberListQuery_Tests: XCTestCase {
             "type": query.cid.type.rawValue,
             "sort": [["field": "created_at", "direction": 1]] as NSArray,
             "filter_conditions": ["id": ["$eq": "luke"]],
+            "limit": 30,
             "offset": 3
         ])
     }
@@ -84,7 +85,7 @@ final class ChannelMemberListQuery_Tests: XCTestCase {
         let query = ChannelMemberListQuery<NoExtraData>(
             cid: .unique,
             filter: .equal(.id, to: "luke"),
-            pagination: [.offset(3)]
+            paginationOptions: [.offset(3)]
         )
 
         // Encode the query.
@@ -95,6 +96,7 @@ final class ChannelMemberListQuery_Tests: XCTestCase {
             "id": query.cid.id,
             "type": query.cid.type.rawValue,
             "filter_conditions": ["id": ["$eq": "luke"]],
+            "limit": 30,
             "offset": 3
         ])
     }
@@ -114,7 +116,7 @@ final class ChannelMemberListQuery_Tests: XCTestCase {
             "id": query.cid.id,
             "type": query.cid.type.rawValue,
             "filter_conditions": ["id": ["$eq": "luke"]],
-            "limit": PaginationOption.channelMembersPageSize.limit!
+            "limit": Int.channelMembersPageSize
         ])
     }
     

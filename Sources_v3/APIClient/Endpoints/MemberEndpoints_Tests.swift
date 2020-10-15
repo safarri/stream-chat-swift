@@ -11,7 +11,7 @@ final class MemberEndpoints_Tests: XCTestCase {
             cid: .unique,
             filter: .equal(.id, to: "Luke"),
             sort: [.init(key: .createdAt)],
-            pagination: [.offset(3)]
+            paginationOptions: [.offset(3)]
         )
         
         let expectedEndpoint = Endpoint<ChannelMemberListPayload<DefaultExtraData.User>>(
