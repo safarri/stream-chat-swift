@@ -83,9 +83,9 @@ public struct ChannelListQuery<ExtraData: ChannelExtraData>: Encodable {
     /// A sorting for the query (see `Sorting`).
     public let sort: [Sorting<ChannelListSortingKey>]
     /// A pagination.
-    public var pagination: Pagination
+    public var pagination: Pagination?
     /// A number of messages inside each channel.
-    public let messagesLimit: Pagination
+    public let messagesLimit: Int
     /// Query options.
     let options: QueryOptions = [.watch]
     
@@ -93,17 +93,19 @@ public struct ChannelListQuery<ExtraData: ChannelExtraData>: Encodable {
     /// - Parameters:
     ///   - filter: a channels filter.
     ///   - sort: a sorting list for channels.
-    ///   - pagination: a channels pagination.
-    ///   - messagesLimit: a messages pagination for the each channel.
+    ///   - pageSize: a page size for pagination.
+    ///   - paginationOptions: an advanced options for pagination. Check `PaginationOption` for more details.
+    ///   - messagesLimit: a number of messages for the channel to be retrieved.
     public init(
         filter: Filter<ChannelListFilterScope<ExtraData>>,
         sort: [Sorting<ChannelListSortingKey>] = [],
-        pagination: Pagination = [.channelsPageSize],
-        messagesLimit: Pagination = [.messagesPageSize]
+        pageSize: Int = .channelsPageSize,
+        paginationOptions: Set<PaginationOption> = [],
+        messagesLimit: Int = .messagesPageSize
     ) {
         self.filter = filter
         self.sort = sort
-        self.pagination = pagination
+        pagination = Pagination(pageSize: pageSize, options: paginationOptions)
         self.messagesLimit = messagesLimit
     }
     
@@ -115,8 +117,8 @@ public struct ChannelListQuery<ExtraData: ChannelExtraData>: Encodable {
             try container.encode(sort, forKey: .sort)
         }
         
-        try container.encode(messagesLimit.limit ?? 0, forKey: .messagesLimit)
+        try container.encode(messagesLimit, forKey: .messagesLimit)
         try options.encode(to: encoder)
-        try pagination.encode(to: encoder)
+        try pagination.map { try $0.encode(to: encoder) }
     }
 }
