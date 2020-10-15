@@ -549,7 +549,7 @@ public extension _ChatChannelController {
             return
         }
         
-        channelQuery.messagesPagination = [.limit(limit), .lessThan(messageId)]
+        channelQuery.pagination = Pagination(pageSize: limit, options: [.lessThan(messageId)])
     
         updater.update(channelQuery: channelQuery, completion: { [weak self] error in
             self?.callback { completion?(error) }
@@ -581,7 +581,7 @@ public extension _ChatChannelController {
             return
         }
         
-        channelQuery.messagesPagination = [.limit(limit), .greaterThan(messageId)]
+        channelQuery.pagination = Pagination(pageSize: limit, options: [.greaterThan(messageId)])
         
         updater.update(channelQuery: channelQuery, completion: { [weak self] error in
             self?.callback { completion?(error) }
