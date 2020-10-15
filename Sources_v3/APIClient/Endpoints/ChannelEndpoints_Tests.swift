@@ -27,32 +27,24 @@ final class ChannelEndpoints_Tests: XCTestCase {
     }
     
     func test_channel_buildsCorrectly() {
-        let channelID = ChannelId(type: .livestream, id: "qwerty")
+        let cid = ChannelId(type: .livestream, id: "qwerty")
         
-        let testCases: [(ChannelQuery<DefaultExtraData>, Bool)] = [
-            (.init(cid: channelID, options: .state), true),
-            (.init(cid: channelID, options: .presence), true),
-            (.init(cid: channelID, options: .watch), true),
-            (.init(cid: channelID, options: .all), true),
-            (.init(cid: channelID, options: []), false)
-        ]
+        let query: ChannelQuery<DefaultExtraData> = .init(cid: cid)
         
-        for (query, requiresConnectionId) in testCases {
-            let expectedEndpoint =
-                Endpoint<ChannelPayload<DefaultExtraData>>(
-                    path: "channels/\(query.pathParameters)/query",
-                    method: .post,
-                    queryItems: nil,
-                    requiresConnectionId: requiresConnectionId,
-                    body: query
-                )
-            
-            // Build endpoint
-            let endpoint: Endpoint<ChannelPayload<DefaultExtraData>> = .channel(query: query)
-            
-            // Assert endpoint is built correctly
-            XCTAssertEqual(AnyEndpoint(expectedEndpoint), AnyEndpoint(endpoint))
-        }
+        let expectedEndpoint =
+            Endpoint<ChannelPayload<DefaultExtraData>>(
+                path: "channels/\(query.pathParameters)/query",
+                method: .post,
+                queryItems: nil,
+                requiresConnectionId: true,
+                body: query
+            )
+        
+        // Build endpoint
+        let endpoint: Endpoint<ChannelPayload<DefaultExtraData>> = .channel(query: query)
+        
+        // Assert endpoint is built correctly
+        XCTAssertEqual(AnyEndpoint(expectedEndpoint), AnyEndpoint(endpoint))
     }
     
     func test_updateChannel_buildsCorrectly() {
