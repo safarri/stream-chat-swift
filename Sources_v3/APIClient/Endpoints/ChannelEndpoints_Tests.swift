@@ -9,29 +9,21 @@ final class ChannelEndpoints_Tests: XCTestCase {
     func test_channels_buildsCorrectly() {
         let filter: Filter<ChannelListFilterScope<NameAndImageExtraData>> = .containMembers(userIds: [.unique])
         
-        let testCases: [(ChannelListQuery<NameAndImageExtraData>, Bool)] = [
-            (.init(filter: filter, options: .state), true),
-            (.init(filter: filter, options: .presence), true),
-            (.init(filter: filter, options: .watch), true),
-            (.init(filter: filter, options: .all), true),
-            (.init(filter: filter, options: []), false)
-        ]
+        let query: ChannelListQuery<NameAndImageExtraData> = .init(filter: filter)
         
-        for (query, requiresConnectionId) in testCases {
-            let expectedEndpoint = Endpoint<ChannelListPayload<DefaultExtraData>>(
-                path: "channels",
-                method: .get,
-                queryItems: nil,
-                requiresConnectionId: requiresConnectionId,
-                body: ["payload": query]
-            )
-            
-            // Build endpoint
-            let endpoint: Endpoint<ChannelListPayload<DefaultExtraData>> = .channels(query: query)
-            
-            // Assert endpoint is built correctly
-            XCTAssertEqual(AnyEndpoint(expectedEndpoint), AnyEndpoint(endpoint))
-        }
+        let expectedEndpoint = Endpoint<ChannelListPayload<DefaultExtraData>>(
+            path: "channels",
+            method: .get,
+            queryItems: nil,
+            requiresConnectionId: true,
+            body: ["payload": query]
+        )
+        
+        // Build endpoint
+        let endpoint: Endpoint<ChannelListPayload<DefaultExtraData>> = .channels(query: query)
+        
+        // Assert endpoint is built correctly
+        XCTAssertEqual(AnyEndpoint(expectedEndpoint), AnyEndpoint(endpoint))
     }
     
     func test_channel_buildsCorrectly() {
