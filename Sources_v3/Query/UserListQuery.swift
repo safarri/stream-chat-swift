@@ -76,7 +76,7 @@ public struct UserListQuery<ExtraData: UserExtraData>: Encodable {
     public var pagination: Pagination
     
     /// Query options. By default the query options contain `presence`.
-    var options: QueryOptions = [.presence]
+    let options: QueryOptions = [.presence]
     
     /// Init a users query.
     /// - Parameters:
